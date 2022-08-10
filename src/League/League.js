@@ -132,6 +132,7 @@ const League = () => {
 
             });
             setPlayers({ team_logo: team_logo, playerInfo: playerDisplayInfo });
+            setError('');
             setShowModal(true);
         }
     }

@@ -14,6 +14,7 @@ const League = () => {
     const [leagueStandings, setLeagueStandings] = useState([]);
     const [players, setPlayers] = useState({ team_logo: '', playerInfo: [] });
     const [showModal, setShowModal] = useState(false);
+    const [error, setError] = useState('');
 
 
     const modalHeading = 'Team Players';
@@ -32,26 +33,53 @@ const League = () => {
     const handleDropdownSelection = async (selectedIndex, name) => {
         if (name === "league") {
             let seasonsData = await fetchSeasonsData();
-            const seasonsOptions = seasonsData.data
-                .map((element) => [element.name, element.league_id, element.id])
-                .filter((element) => element[1] == selectedIndex)
-                .map((element) => {
-                    return { name: element[0], id: element[2] };
-                });
-            setSeasons(seasonsOptions);
+            if (seasonsData.error) {
+                setError(seasonsData.error.message);
+            }
+            else {
+                const seasonsOptions = seasonsData.data
+                    .map((element) => [element.name, element.league_id, element.id])
+                    .filter((element) => element[1] == selectedIndex)
+                    .map((element) => {
+                        return { name: element[0], id: element[2] };
+                    });
+                setSeasons(seasonsOptions);
+                setError('');
+            }
         } else {
             const leagueStandingsTableData = await fetchLeagueStandings(
                 selectedIndex
             );
             let tables = [];
             let index = 0;
-            leagueStandingsTableData.data.forEach((stage) => {
-                // remove hard coding and refactor by recursively traversing object to find the last data(find objects without 'standings' as child)?
-                if (stage.name === '2nd Phase' || stage.name === 'Relegation Round') {
-                    let phaseTwoGroups = stage.standings.data;
-                    return phaseTwoGroups.map(group => {
-                        let teams = group.standings.data;
-                        let tableInfo = teams.map(team => {
+            if (leagueStandingsTableData.error) {
+                setError(leagueStandingsTableData.error.message);
+            }
+            else {
+                leagueStandingsTableData.data.forEach((stage) => {
+                    // remove hard coding and refactor by recursively traversing object to find the last data(find objects without 'standings' as child)?
+                    if (stage.name === '2nd Phase' || stage.name === 'Relegation Round') {
+                        let phaseTwoGroups = stage.standings.data;
+                        return phaseTwoGroups.map(group => {
+                            let teams = group.standings.data;
+                            let tableInfo = teams.map(team => {
+                                return {
+                                    id: team.team_id,
+                                    position: team.position,
+                                    name: team.team_name,
+                                    played: team.overall.games_played,
+                                    won: team.overall.won,
+                                    drawn: team.overall.draw,
+                                    lost: team.overall.lost,
+                                    goal: team.overall.goals_scored,
+                                    difference: team.total.goal_difference,
+                                    points: team.total.points,
+                                };
+                            })
+                            tables = [...tables, { table_id: index++, table_header: stage.name + ' -- ' + group.name, tableInfo: tableInfo }];
+                        })
+                    } else {
+                        let tableInfo = stage.standings.data.map(team => {
                             return {
                                 id: team.team_id,
                                 position: team.position,
@@ -65,54 +93,46 @@ const League = () => {
                                 points: team.total.points,
                             };
                         })
-                        tables = [...tables, { table_id: index++, table_header: stage.name + ' -- ' + group.name, tableInfo: tableInfo }];
-                    })
-                } else {
-                    let tableInfo = stage.standings.data.map(team => {
-                        return {
-                            id: team.team_id,
-                            position: team.position,
-                            name: team.team_name,
-                            played: team.overall.games_played,
-                            won: team.overall.won,
-                            drawn: team.overall.draw,
-                            lost: team.overall.lost,
-                            goal: team.overall.goals_scored,
-                            difference: team.total.goal_difference,
-                            points: team.total.points,
-                        };
-                    })
-                    tables = [...tables, { table_id: index++, table_header: stage.name, tableInfo: tableInfo }];
-                }
-            })
-            setLeagueStandings(tables);
+                        tables = [...tables, { table_id: index++, table_header: stage.name, tableInfo: tableInfo }];
+                    }
+                })
+                setLeagueStandings(tables);
+            }
 
         }
     };
 
     const handleCellClick = async (selectedTeamId) => {
         const players = await fetchTeamPlayers(selectedTeamId);
-        const team_logo = players.data.logo_path;
-        const playerIds = players.data.squad.data.map(element => element.player_id);
-        const playersScoreCards = players.data.squad.data.map(element => { return { rating: element.rating, yellow_cards: element.yellowcards, red_cards: element.redcards, appearances: element.appearances } });
-        const playerInfoFromApi = await Promise.all(playerIds.map(async (element) => {
-            let response = await fetchPlayerInfo(element);
-            return response;
-        }));
-        const playerDisplayInfo = playerInfoFromApi.map((element, index) => {
-            return {
-                team_id: element.data.team_id,
-                score_card: playersScoreCards[index],
-                name: element.data.display_name,
-                nationality: element.data.nationality,
-                image: element.data.image_path ? element.data.image_path : 'https://cdn.sportmonks.com/images/soccer/players/2/1452162.png',
-                position: element.data.position_id,
-                id: element.data.player_id
-            }
+        if (players.error) {
+            setError(players.error.message);
+        }
+        else {
+            const team_logo = players.data.logo_path;
+            const playerIds = players.data.squad.data.map(element => element.player_id);
+            const playersScoreCards = players.data.squad.data.map(element => { return { rating: element.rating, yellow_cards: element.yellowcards, red_cards: element.redcards, appearances: element.appearances } });
+            const playerInfoFromApi = await Promise.all(playerIds.map(async (element) => {
+                let response = await fetchPlayerInfo(element);
+                if(response.error){
+                    setError(response.error.message);
+                }
+                return response;
+            }));
+            const playerDisplayInfo = playerInfoFromApi.map((element, index) => {
+                return {
+                    team_id: element.data.team_id,
+                    score_card: playersScoreCards[index],
+                    name: element.data.display_name,
+                    nationality: element.data.nationality,
+                    image: element.data.image_path ? element.data.image_path : 'https://cdn.sportmonks.com/images/soccer/players/2/1452162.png',
+                    position: element.data.position_id,
+                    id: element.data.player_id
+                }
 
-        });
-        setPlayers({ team_logo: team_logo, playerInfo: playerDisplayInfo });
-        setShowModal(true);
+            });
+            setPlayers({ team_logo: team_logo, playerInfo: playerDisplayInfo });
+            setShowModal(true);
+        }
     }
 
     // helper Functions
@@ -125,6 +145,7 @@ const League = () => {
         }
         catch (err) {
             console.log(err);
+            setError('an Error occured, please try again later');
         }
     }
     const fetchSeasonsData = async () => {
@@ -136,6 +157,7 @@ const League = () => {
         }
         catch (err) {
             console.log(err);
+            setError('an Error occured, please try again later');
         }
     };
 
@@ -148,6 +170,7 @@ const League = () => {
         }
         catch (err) {
             console.log(err);
+            setError('an Error occured, please try again later');
         }
     };
 
@@ -158,6 +181,7 @@ const League = () => {
         }
         catch (err) {
             console.log(err);
+            setError('an Error occured, please try again later');
         }
     }
 
@@ -173,11 +197,13 @@ const League = () => {
                     return { name: element.name, id: element.id };
                 });
                 setLeagues(leaguesData);
+                setError('');
             }
             fetchLeagues();
         }
         catch (err) {
             console.log(err);
+            setError('an Error occured, please try again later');
         }
 
     }, []);
@@ -185,6 +211,7 @@ const League = () => {
     return (
         <>
             <div className="league__main">
+                {error !=='' ? <div className="league__error">{error}</div> : null}
                 <section className="league__user-input">
                     <div className="league__user-input__dropdown">{leagues && <HelperDropdown
                         name="league"
@@ -209,7 +236,7 @@ const League = () => {
                                 {players.playerInfo.map(element => (
                                     <Col key={element.id} md={3} lg={3} sm={3} xs={12}>
                                         <Row className="rowSpacing">
-                                            <img src={element.image} alt="player_image" />
+                                            <img className="player__profile-image" src={element.image} alt="player_image" />
                                             <Col md={12}><div> <span className="player__profile-data__label">{profileHeaders[0]} </span>: {element.name}</div></Col>
                                             <Col md={12}><div><span className="player__profile-data__label">{profileHeaders[1]}</span>:{element.nationality}</div></Col>
                                             <Col md={12}><div><span className="player__profile-data__label">{profileHeaders[2]}</span>: {element.position}</div></Col>

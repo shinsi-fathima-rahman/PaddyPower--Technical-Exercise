@@ -116,13 +116,11 @@ const League = () => {
     }
 
     // helper Functions
-    //remove mock url
     /*TODO :Add spinner so the user doesnt have to wait on the screen */
     /*TODO : Create Error State component */
     const fetchPlayerInfo = async (playerId) => {
         try {
             const response = await fetch(`https://soccer.sportmonks.com/api/v2.0/players/${playerId}?api_token=HOLCAStI6Z0OfdoPbjdSg5b41Q17w2W5P4WuoIBdC66Z54kUEvGWPIe33UYC`);
-            //let response = await fetch('https://mocki.io/v1/96b14f20-b882-4d33-b0a5-b40edbbed174');
             return await response.json();
         }
         catch (err) {
@@ -203,11 +201,11 @@ const League = () => {
                     </div>
                 </section>
                 <section className="league__data-table">
-                    {leagueStandings.length ? leagueStandings.map((table) => (<HelperTable key={table.table_id} columnHeaders={columnHeaders} tableHeader={table.table_header} tableData={table.tableInfo} onCellClick={handleCellClick} />)) : <EmptyState />}
+                    {leagueStandings.length > 0 ? leagueStandings.map((table) => (<HelperTable key={table.table_id} columnHeaders={columnHeaders} tableHeader={table.table_header} tableData={table.tableInfo} onCellClick={handleCellClick} />)) : <EmptyState />}
                     <HelperModal className="player__profile-data" show={showModal} header={modalHeading} handleClose={() => setShowModal(false)}>
                         <Container>
                             <Row md={4}>
-                                <Col md={3} lg={3} sm={3} xs={12}><img src={players && players.team_logo} alt="team_logo" /></Col>
+                                <Col md={3} lg={3} sm={3} xs={12}><img src={players.team_logo} alt="team_logo" /></Col>
                                 {players && players.playerInfo.map(element => (
                                     <Col key={element.id} md={3} lg={3} sm={3} xs={12}>
                                         <Row className="rowSpacing">

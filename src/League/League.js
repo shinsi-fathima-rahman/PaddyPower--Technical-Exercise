@@ -146,7 +146,6 @@ const League = () => {
             return await response.json();
         }
         catch (err) {
-            console.log(err);
             setError('an Error occured, please try again later');
         }
     }
@@ -158,7 +157,6 @@ const League = () => {
             return await seasonsData.json();
         }
         catch (err) {
-            console.log(err);
             setError('an Error occured, please try again later');
         }
     };
@@ -171,7 +169,6 @@ const League = () => {
             return await leagueStandings.json();
         }
         catch (err) {
-            console.log(err);
             setError('an Error occured, please try again later');
         }
     };
@@ -182,7 +179,6 @@ const League = () => {
             return await teamPlayersData.json();
         }
         catch (err) {
-            console.log(err);
             setError('an Error occured, please try again later');
         }
     }
@@ -204,7 +200,6 @@ const League = () => {
             fetchLeagues();
         }
         catch (err) {
-            console.log(err);
             setError('an Error occured, please try again later');
         }
 

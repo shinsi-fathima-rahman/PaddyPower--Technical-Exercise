@@ -40,7 +40,9 @@ const League = () => {
                 });
             setSeasons(seasonsOptions);
         } else {
-            const leagueStandingsTableData = await fetchLeagueStandings(selectedIndex);
+            const leagueStandingsTableData = await fetchLeagueStandings(
+                selectedIndex
+            );
             let tables = [];
             let index = 0;
             leagueStandingsTableData.data.forEach((stage) => {
@@ -114,6 +116,7 @@ const League = () => {
     }
 
     // helper Functions
+    //remove mock url
     /*TODO :Add spinner so the user doesnt have to wait on the screen */
     /*TODO : Create Error State component */
     const fetchPlayerInfo = async (playerId) => {
@@ -184,14 +187,14 @@ const League = () => {
         <>
             <div className="league__main">
                 <section className="league__user-input">
-                    <div className="league__user-input__dropdown">{leagues && <HelperDropdown
+                    <div className="league__user-input__dropdown">{leagues.length > 0 && <HelperDropdown
                         name="league"
                         options={leagues}
                         onSelection={handleDropdownSelection}
                     />}
                     </div>
                     <div className="league__user-input__dropdown">
-                        {seasons && <HelperDropdown
+                        {seasons.length > 0 && <HelperDropdown
                             name="season"
                             options={seasons}
                             onSelection={handleDropdownSelection}
@@ -199,15 +202,15 @@ const League = () => {
                     </div>
                 </section>
                 <section className="league__data-table">
-                    {leagueStandings.length ? leagueStandings.map((table) => (<HelperTable key={table.table_id} columnHeaders={columnHeaders} tableHeader={table.table_header} tableData={table.tableInfo} onCellClick={handleCellClick} />)) : <EmptyState />}
-                    <HelperModal className="player__profile-data" show={showModal} header={modalHeading} handleClose={() => setShowModal(false)}>
+                    {leagueStandings.length > 0 ? leagueStandings.map((table) => (<HelperTable key={table.table_id} columnHeaders={columnHeaders} tableHeader={table.table_header} tableData={table.tableInfo} onCellClick={handleCellClick} />)) : <EmptyState />}
+                    {players.length > 0 ?<HelperModal className="player__profile-data" show={showModal} header={modalHeading} handleClose={() => setShowModal(false)}>
                         <Container>
                             <Row md={4}>
-                                <Col md={3} lg={3} sm={3} xs={12}><img src={players && players.team_logo} alt="team_logo" /></Col>
+                                <Col md={3} lg={3} sm={3} xs={12}><img className="player__team-logo" src={players.team_logo} alt="team_logo" /></Col>
                                 {players && players.playerInfo.map(element => (
                                     <Col key={element.id} md={3} lg={3} sm={3} xs={12}>
                                         <Row className="rowSpacing">
-                                            <img src={element.image} alt="player_image" />
+                                            <img class="player__profile-image" src={element.image} alt="player_image" />
                                             <Col md={12}><div> <span className="player__profile-data__label">{profileHeaders[0]} </span>: {element.name}</div></Col>
                                             <Col md={12}><div><span className="player__profile-data__label">{profileHeaders[1]}</span>:{element.nationality}</div></Col>
                                             <Col md={12}><div><span className="player__profile-data__label">{profileHeaders[2]}</span>: {element.position}</div></Col>
@@ -222,7 +225,7 @@ const League = () => {
                                 }
                             </Row>
                         </Container>
-                    </HelperModal>
+                    </HelperModal> : <EmptyState/>}
                 </section>
             </div>
         </>

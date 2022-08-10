@@ -203,7 +203,7 @@ const League = () => {
                 </section>
                 <section className="league__data-table">
                     {leagueStandings.length > 0 ? leagueStandings.map((table) => (<HelperTable key={table.table_id} columnHeaders={columnHeaders} tableHeader={table.table_header} tableData={table.tableInfo} onCellClick={handleCellClick} />)) : <EmptyState />}
-                    {players.length > 0 ?<HelperModal className="player__profile-data" show={showModal} header={modalHeading} handleClose={() => setShowModal(false)}>
+                    {players.length > 0 &&<HelperModal className="player__profile-data" show={showModal} header={modalHeading} handleClose={() => setShowModal(false)}>
                         <Container>
                             <Row md={4}>
                                 <Col md={3} lg={3} sm={3} xs={12}><img className="player__team-logo" src={players.team_logo} alt="team_logo" /></Col>
@@ -225,7 +225,7 @@ const League = () => {
                                 }
                             </Row>
                         </Container>
-                    </HelperModal> : <EmptyState/>}
+                    </HelperModal>}
                 </section>
             </div>
         </>

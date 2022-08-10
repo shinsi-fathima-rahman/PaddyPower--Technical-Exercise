@@ -96,8 +96,13 @@ const League = () => {
         const playerIds = players.data.squad.data.map(element => element.player_id);
         const playersScoreCards = players.data.squad.data.map(element => { return { rating: element.rating, yellow_cards: element.yellowcards, red_cards: element.redcards, appearances: element.appearances } });
         const playerInfoFromApi = await Promise.all(playerIds.map(async (element) => {
-            let response = await fetchPlayerInfo(element);
-            return response;
+            try {
+                let response = await fetchPlayerInfo(element);
+                return response;
+            }
+            catch (err) {
+                console.log(err);
+            }
         }));
         const playerDisplayInfo = playerInfoFromApi.map((element, index) => {
             return {
@@ -116,9 +121,8 @@ const League = () => {
     }
 
     // helper Functions
-    //remove mock url
     /*TODO :Add spinner so the user doesnt have to wait on the screen */
-    /*TODO : Create Error State component */
+    /*TODO : Create Error State component and Implement Error state*/
     const fetchPlayerInfo = async (playerId) => {
         try {
             const response = await fetch(`https://soccer.sportmonks.com/api/v2.0/players/${playerId}?api_token=HOLCAStI6Z0OfdoPbjdSg5b41Q17w2W5P4WuoIBdC66Z54kUEvGWPIe33UYC`);

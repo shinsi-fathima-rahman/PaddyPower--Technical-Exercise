@@ -205,8 +205,8 @@ const League = () => {
                     <HelperModal className="player__profile-data" show={showModal} header={modalHeading} handleClose={() => setShowModal(false)}>
                         <Container>
                             <Row md={4}>
-                                <Col md={3} lg={3} sm={3} xs={12}><img src={players.team_logo} alt="team_logo" /></Col>
-                                {players && players.playerInfo.map(element => (
+                                <Col md={3} lg={3} sm={3} xs={12}><img className="player__team-logo" src={players.team_logo} alt="team_logo" /></Col>
+                                {players.playerInfo.map(element => (
                                     <Col key={element.id} md={3} lg={3} sm={3} xs={12}>
                                         <Row className="rowSpacing">
                                             <img src={element.image} alt="player_image" />

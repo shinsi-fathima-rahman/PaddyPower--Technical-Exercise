@@ -1,0 +1,20 @@
+.rowSpacing{
+    padding-bottom: 30px;
+  }
+
+.league__main{
+    padding: 30px;
+}
+
+.league__user-input{
+    padding-bottom: 30px;
+}
+
+.league__user-input__dropdown{
+    padding-bottom: 20px;
+}
+
+.player__profile-data__label{
+    color: brown;
+    font-weight: bold;
+}

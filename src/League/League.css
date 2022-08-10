@@ -21,3 +21,8 @@
 .player__profile-image, .player__team-logo{
     height: 150px;
 }
+.league__error{
+    background-color: grey;
+    font-weight: bold;
+    margin-bottom: 20px;
+}

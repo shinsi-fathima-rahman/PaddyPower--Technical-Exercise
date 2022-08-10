@@ -40,9 +40,7 @@ const League = () => {
                 });
             setSeasons(seasonsOptions);
         } else {
-            const leagueStandingsTableData = await fetchLeagueStandings(
-                selectedIndex
-            );
+            const leagueStandingsTableData = await fetchLeagueStandings(selectedIndex);
             let tables = [];
             let index = 0;
             leagueStandingsTableData.data.forEach((stage) => {
@@ -116,7 +114,6 @@ const League = () => {
     }
 
     // helper Functions
-    //remove mock url
     /*TODO :Add spinner so the user doesnt have to wait on the screen */
     /*TODO : Create Error State component */
     const fetchPlayerInfo = async (playerId) => {

@@ -45,7 +45,7 @@ const HelperTable = ({ columnHeaders, tableHeader, tableData, onCellClick }) => 
     return (
         <>
             <div className="helper-table__header" data-testid='header'>{tableHeader}</div>
-            {internalTableInfo.length ? <Table className="helper-table" striped bordered hover>
+            {internalTableInfo.length > 0 ? <Table className="helper-table" striped bordered hover>
                 <thead>
                     <tr>
                         {columnHeaders.map((element) => {

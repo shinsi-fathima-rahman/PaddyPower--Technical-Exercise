@@ -97,6 +97,7 @@ const League = () => {
                     }
                 })
                 setLeagueStandings(tables);
+                setError('');
             }
 
         }

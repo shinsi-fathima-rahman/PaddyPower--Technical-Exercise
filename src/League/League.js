@@ -121,8 +121,7 @@ const League = () => {
     /*TODO : Create Error State component */
     const fetchPlayerInfo = async (playerId) => {
         try {
-            //const response = await fetch(`https://soccer.sportmonks.com/api/v2.0/players/${playerId}?api_token=HOLCAStI6Z0OfdoPbjdSg5b41Q17w2W5P4WuoIBdC66Z54kUEvGWPIe33UYC`);
-            let response = await fetch('https://mocki.io/v1/96b14f20-b882-4d33-b0a5-b40edbbed174');
+            const response = await fetch(`https://soccer.sportmonks.com/api/v2.0/players/${playerId}?api_token=HOLCAStI6Z0OfdoPbjdSg5b41Q17w2W5P4WuoIBdC66Z54kUEvGWPIe33UYC`);
             return await response.json();
         }
         catch (err) {
